@@ -7,7 +7,7 @@ import (
 
 func main() {
 	elevio.Init("localhost:48613", 4)
-	/*Obstruction and stop button is not implemented*/
+	/*Stop button is not working*/
 	ch_onRequestButtonPress := make(chan elevio.ButtonEvent)
 	ch_onFloorArrival := make(chan int)
 	ch_obstruction := make(chan bool)
