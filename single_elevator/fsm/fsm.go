@@ -24,13 +24,13 @@ func Fsm_onInitElevator() *cf.Elevator {
 		}
 	}
 
-	elevet := &cf.Elevator{
+	elevat := &cf.Elevator{
 		//Floor:    ,
 		Dir:      elevio.MD_Stop,
 		Requests: requests,
 		Behave:   cf.Idle,
 		Econfig:  cf.Config{ClearRequestVariant: cf.CV_All, TimerCount: 0}}
-	return elevet
+	return elevat
 }
 
 func Fsm_onRequestButtonPress(e *cf.Elevator, btn_floor int, btn_type elevio.ButtonType, doorTimer *time.Timer) {
