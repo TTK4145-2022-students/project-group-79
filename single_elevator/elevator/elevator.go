@@ -7,8 +7,8 @@ import (
 	"time"
 )
 
-func Elevator(onRequestButtonPress chan elevio.ButtonEvent, ch_onFloorArrival chan int) {
-	//, ch_obstruction chan bool)
+func Elevator(onRequestButtonPress chan elevio.ButtonEvent, ch_onFloorArrival chan int,
+	ch_onStopButtonPress chan bool, ch_obstruction chan bool) {
 
 	e := fsm.Fsm_onInitElevator()
 
@@ -23,10 +23,13 @@ func Elevator(onRequestButtonPress chan elevio.ButtonEvent, ch_onFloorArrival ch
 		case <-doorTimer.C:
 			fsm.Fsm_onDoorTimeout(e, doorTimer)
 
-			/*case obstruction := <-ch_obstruction:
+		case <-ch_onStopButtonPress:
+			//fsm.Fsm_onInitElevator()
+			elevio.SetStopLamp(true)
+		case obstruction := <-ch_obstruction:
 			if e.Behave == cf.DoorOpen && obstruction {
 				doorTimer.Reset(time.Duration(cf.DoorOpenDuration) * time.Second)
-			}*/
+			}
 		}
 	}
 }

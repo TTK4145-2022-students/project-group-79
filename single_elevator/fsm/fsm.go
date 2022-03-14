@@ -24,20 +24,20 @@ func Fsm_onInitElevator() *cf.Elevator {
 		}
 	}
 
-	elevet := cf.Elevator{
+	elevet := &cf.Elevator{
 		//Floor:    ,
 		Dir:      elevio.MD_Stop,
 		Requests: requests,
 		Behave:   cf.Idle,
 		Econfig:  cf.Config{ClearRequestVariant: cf.CV_All, TimerCount: 0}}
-	return &elevet
+	return elevet
 }
 
 func Fsm_onRequestButtonPress(e *cf.Elevator, btn_floor int, btn_type elevio.ButtonType, doorTimer *time.Timer) {
 	switch e.Behave {
 	case cf.DoorOpen:
 		if request.Request_shouldClearImmediately(e, btn_floor, btn_type) {
-			doorTimer.Reset(time.Duration(3) * time.Second)
+			doorTimer.Reset(time.Duration(cf.DoorOpenDuration) * time.Second)
 		} else {
 			e.Requests[btn_floor][btn_type] = true
 		}
@@ -51,7 +51,7 @@ func Fsm_onRequestButtonPress(e *cf.Elevator, btn_floor int, btn_type elevio.But
 		switch a.Behav {
 		case cf.DoorOpen:
 			elevio.SetDoorOpenLamp(true)
-			doorTimer.Reset(time.Duration(3) * time.Second)
+			doorTimer.Reset(time.Duration(cf.DoorOpenDuration) * time.Second)
 			*e = request.Request_clearAtCurrentFloor(e)
 		case cf.Moving:
 			elevio.SetMotorDirection(e.Dir)
