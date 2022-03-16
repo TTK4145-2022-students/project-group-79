@@ -25,6 +25,7 @@ func Elevator(onRequestButtonPress chan elevio.ButtonEvent, ch_onFloorArrival ch
 
 		case <-ch_onStopButtonPress:
 			//fsm.Fsm_onInitElevator()
+			elevio.SetMotorDirection(elevio.MD_Stop)
 			elevio.SetStopLamp(true)
 		case obstruction := <-ch_obstruction:
 			if e.Behave == cf.DoorOpen && obstruction {
