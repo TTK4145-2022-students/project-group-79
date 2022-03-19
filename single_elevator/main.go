@@ -6,7 +6,7 @@ import (
 )
 
 func main() {
-	elevio.Init("localhost:48613", 4)
+	elevio.Init("localhost:48613", cf.NumFloors)
 	/*Stop button is not working*/
 	ch_onRequestButtonPress := make(chan elevio.ButtonEvent)
 	ch_onFloorArrival := make(chan int)
