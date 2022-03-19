@@ -32,7 +32,6 @@ func Fsm_onInitElevator() *cf.Elevator {
 				elevio.SetMotorDirection(elevio.MD_Stop)
 				break
 			}
-
 		}
 	}
 
