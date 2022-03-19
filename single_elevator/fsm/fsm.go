@@ -24,8 +24,20 @@ func Fsm_onInitElevator() *cf.Elevator {
 		}
 	}
 
-	elevat := &cf.Elevator{
-		//Floor:    ,
+	/* if the elevator starts between floors */
+	if elevio.GetFloor() == -1 {
+		elevio.SetMotorDirection(elevio.MD_Down)
+		for {
+			if elevio.GetFloor() != -1 {
+				elevio.SetMotorDirection(elevio.MD_Stop)
+				break
+			}
+
+		}
+	}
+
+	elevet := &cf.Elevator{
+		Floor:    elevio.GetFloor(),
 		Dir:      elevio.MD_Stop,
 		Requests: requests,
 		Behave:   cf.Idle,
