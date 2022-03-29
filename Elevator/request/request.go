@@ -1,8 +1,8 @@
 package request
 
 import (
-	"Elevator-go/elevio"
-	cf "Elevator-go/type_"
+	"Elevator-go/Elevator/elevio"
+	cf "Elevator-go/Elevator/type_"
 )
 
 func Requests_above(e cf.Elevator) bool {

@@ -1,9 +1,9 @@
 package fsm
 
 import (
-	"Elevator-go/elevio"
-	"Elevator-go/request"
-	cf "Elevator-go/type_"
+	"Elevator-go/Elevator/elevio"
+	"Elevator-go/Elevator/request"
+	cf "Elevator-go/Elevator/type_"
 	"time"
 )
 
@@ -23,7 +23,6 @@ func Fsm_onInitElevator() *cf.Elevator {
 			requests[floor][button] = false
 		}
 	}
-
 	/* if the elevator starts between floors */
 	if elevio.GetFloor() == -1 {
 		elevio.SetMotorDirection(elevio.MD_Down)
@@ -35,12 +34,12 @@ func Fsm_onInitElevator() *cf.Elevator {
 		}
 	}
 
-	 return &cf.Elevator{
+	return &cf.Elevator{
 		Floor:    elevio.GetFloor(),
 		Dir:      elevio.MD_Stop,
 		Requests: requests,
 		Behave:   cf.Idle,
-		Econfig:  cf.Config{ClearRequestVariant: cf.CV_All, TimerCount: 0}}
+		Econfig:  cf.Config{ClearRequestVariant: cf.CV_InDirn, TimerCount: 0}}
 }
 
 func Fsm_onRequestButtonPress(e *cf.Elevator, btn_floor int, btn_type elevio.ButtonType, doorTimer *time.Timer) {
@@ -99,7 +98,7 @@ func Fsm_onDoorTimeout(e *cf.Elevator, doorTimer *time.Timer) {
 		case cf.DoorOpen:
 			doorTimer.Reset(time.Duration(cf.DoorOpenDuration) * time.Second)
 			*e = request.Request_clearAtCurrentFloor(e)
-			//SetAllLights(e)
+			/* SetAllLights(e) */
 		case cf.Moving:
 			fallthrough
 		case cf.Idle:

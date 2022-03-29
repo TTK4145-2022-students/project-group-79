@@ -1,10 +1,13 @@
 package config
 
-import "Elevator-go/elevio"
+import "Elevator-go/Elevator/elevio"
 
 const NumFloors = 4
 const NumButtons = 3
 const DoorOpenDuration = 3
+
+/* Local elevator id */
+var LocalElevId string
 
 type Behaviour int
 
@@ -45,3 +48,24 @@ type Elevator struct {
 	Behave   Behaviour
 	Econfig  Config
 }
+
+type OrderToExternalElev struct {
+	Order   elevio.ButtonEvent
+	Elev_Id string
+}
+
+/* tracks online available elevators by storing their state and id */
+
+type ElevBehavToTx struct {
+	ElevFloor    int
+	Direcn       elevio.MotorDirection
+	ElevRequests [][]bool
+	ElevBehav    Behaviour
+}
+
+type LocalElevatorState struct {
+	ElevatorState ElevBehavToTx
+	ElevatorId    string
+}
+
+var OnlineElevatorsState []LocalElevatorState
