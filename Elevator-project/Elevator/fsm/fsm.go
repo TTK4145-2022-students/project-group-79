@@ -4,13 +4,18 @@ import (
 	"Elevator-go/Elevator/elevio"
 	"Elevator-go/Elevator/request"
 	cf "Elevator-go/Elevator/type_"
+	"Elevator-go/network/bcast"
 	"time"
 )
 
-func SetAllLights(e *cf.Elevator) {
+var ch_tx_allRequests = make(chan cf.Elevator)
+
+func SetCabLights(e *cf.Elevator) {
 	for floor := 0; floor < cf.NumFloors; floor++ {
 		for btn := 0; btn < cf.NumButtons; btn++ {
-			elevio.SetButtonLamp(elevio.ButtonType(btn), floor, e.Requests[floor][btn])
+			if elevio.ButtonType(btn) == elevio.BT_Cab {
+				elevio.SetButtonLamp(elevio.ButtonType(btn), floor, e.Requests[floor][btn])
+			}
 		}
 	}
 }
@@ -33,6 +38,8 @@ func Fsm_onInitElevator() *cf.Elevator {
 			}
 		}
 	}
+
+	go bcast.Transmitter(16570, ch_tx_allRequests)
 
 	return &cf.Elevator{
 		Floor:    elevio.GetFloor(),
@@ -68,7 +75,8 @@ func Fsm_onRequestButtonPress(e *cf.Elevator, btn_floor int, btn_type elevio.But
 
 		}
 	}
-	SetAllLights(e)
+	SetCabLights(e)
+	ch_tx_allRequests <- *e
 }
 
 func Fsm_onFloorArrival(e *cf.Elevator, floor int, doorTimer *time.Timer) {
@@ -84,7 +92,8 @@ func Fsm_onFloorArrival(e *cf.Elevator, floor int, doorTimer *time.Timer) {
 			e.Behave = cf.DoorOpen
 		}
 	}
-	SetAllLights(e)
+	SetCabLights(e)
+	ch_tx_allRequests <- *e
 }
 
 func Fsm_onDoorTimeout(e *cf.Elevator, doorTimer *time.Timer) {
@@ -98,7 +107,7 @@ func Fsm_onDoorTimeout(e *cf.Elevator, doorTimer *time.Timer) {
 		case cf.DoorOpen:
 			doorTimer.Reset(time.Duration(cf.DoorOpenDuration) * time.Second)
 			*e = request.Request_clearAtCurrentFloor(e)
-			/* SetAllLights(e) */
+			/* SetCabLights(e) */
 		case cf.Moving:
 			fallthrough
 		case cf.Idle:

@@ -15,7 +15,8 @@ var flag bool = true
 func Network_interface(
 	ch_orderToExternalElevator chan cf.OrderToExternalElev,
 	ch_orderFromExternalElevator chan cf.OrderToExternalElev,
-	ch_localElevatorStateToNtk chan cf.LocalElevatorState) {
+	ch_localElevatorStateToNtk chan cf.LocalElevatorState,
+	ch_ackToMaster chan string, ch_ackFromElevs chan string) {
 
 	ch_orderFromexternal := make(chan cf.OrderToExternalElev)
 	ch_elevStatesFromExternal := make(chan cf.LocalElevatorState)
@@ -23,11 +24,14 @@ func Network_interface(
 	ch_elevStatesToExternal := make(chan cf.LocalElevatorState)
 	ch_peerTxEnable := make(chan bool)
 
+	ch_ackFromController := make(chan string)
+	ch_ackTocontroller := make(chan string)
+
 	go peers.Transmitter(15647, cf.LocalElevId, ch_peerTxEnable)
 	go peers.Receiver(15647, ch_OnlineElevsId)
 
-	go bcast.Transmitter(16569, ch_orderToExternalElevator, ch_elevStatesToExternal)
-	go bcast.Receiver(16569, ch_elevStatesFromExternal, ch_orderFromexternal)
+	go bcast.Transmitter(16569, ch_orderToExternalElevator, ch_elevStatesToExternal, ch_ackFromController)
+	go bcast.Receiver(16569, ch_elevStatesFromExternal, ch_orderFromexternal, ch_ackTocontroller)
 
 	for {
 		select {
@@ -83,6 +87,10 @@ func Network_interface(
 			} else {
 				flag = true
 			}
+		case ack := <-ch_ackTocontroller:
+			ch_ackToMaster <- ack
+		case ack := <-ch_ackFromElevs:
+			ch_ackFromController <- ack
 		}
 	}
 }
